@@ -14,3 +14,20 @@ export function getPrivateProfile(req, res) {
     userData: user,
   });
 }
+/*updateProfile */
+export async function updateProfile(req, res) {
+  const userId = req.params.userId;
+  const newData = req.body;
+
+  const updatedUser = await updateProfile(userId, newData);
+
+  handleSuccess(res, 200, "Perfil actualizado exitosamente", { updatedUser });
+}  
+/*deleteProfile */
+export async function deleteProfile(req, res) {
+  const userId = req.user.id;
+
+  await deleteProfile(userId);
+
+  handleSuccess(res, 200, "Perfil eliminado exitosamente");
+}
