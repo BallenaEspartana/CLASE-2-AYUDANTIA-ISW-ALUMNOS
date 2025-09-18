@@ -15,19 +15,46 @@ export function getPrivateProfile(req, res) {
   });
 }
 /*updateProfile */
+import { handleSuccess } from "../Handlers/responseHandlers.js";
+import bcrypt from "bcrypt";
+import { AppDataSource } from "../config/configDB.js";
+import { User } from "../entities/user.entity.js";
+
+const userRepository = AppDataSource.getRepository(User);
+
 export async function updateProfile(req, res) {
-  const userId = req.params.userId;
-  const newData = req.body;
+  try {
+    const userId = req.user.id;           // ✅ ID del token
+    const { email, password } = req.body; // ✅ datos nuevos
 
-  const updatedUser = await updateProfile(userId, newData);
+    const user = await userRepository.findOneBy({ id: userId });
+    if (!user) return res.status(404).json({ error: "Usuario no encontrado" });
 
-  handleSuccess(res, 200, "Perfil actualizado exitosamente", { updatedUser });
-}  
+    if (email) user.email = email;
+    if (password) user.password = await bcrypt.hash(password, 10);
+
+    await userRepository.save(user);
+
+    handleSuccess(res, 200, "Perfil actualizado exitosamente", { user });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al actualizar perfil" });
+  }
+}
+
 /*deleteProfile */
 export async function deleteProfile(req, res) {
-  const userId = req.user.id;
+  try {
+    const userId = req.user.id; // ✅ ID del token
 
-  await deleteProfile(userId);
+    const user = await userRepository.findOneBy({ id: userId });
+    if (!user) return res.status(404).json({ error: "Usuario no encontrado" });
 
-  handleSuccess(res, 200, "Perfil eliminado exitosamente");
+    await userRepository.remove(user);
+
+    handleSuccess(res, 200, "Perfil eliminado exitosamente");
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al eliminar perfil" });
+  }
 }
