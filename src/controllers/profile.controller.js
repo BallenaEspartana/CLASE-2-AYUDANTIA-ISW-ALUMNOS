@@ -1,4 +1,7 @@
 import { handleSuccess } from "../Handlers/responseHandlers.js";
+import bcrypt from "bcrypt";
+import { AppDataSource } from "../config/configDB.js";
+import { User } from "../entities/user.entity.js";
 
 export function getPublicProfile(req, res) {
   handleSuccess(res, 200, "Perfil público obtenido exitosamente", {
@@ -15,17 +18,13 @@ export function getPrivateProfile(req, res) {
   });
 }
 /*updateProfile */
-import { handleSuccess } from "../Handlers/responseHandlers.js";
-import bcrypt from "bcrypt";
-import { AppDataSource } from "../config/configDB.js";
-import { User } from "../entities/user.entity.js";
 
 const userRepository = AppDataSource.getRepository(User);
 
 export async function updateProfile(req, res) {
   try {
-    const userId = req.user.id;           // ✅ ID del token
-    const { email, password } = req.body; // ✅ datos nuevos
+    const userId = req.user.id;          
+    const { email, password } = req.body; 
 
     const user = await userRepository.findOneBy({ id: userId });
     if (!user) return res.status(404).json({ error: "Usuario no encontrado" });
@@ -45,7 +44,7 @@ export async function updateProfile(req, res) {
 /*deleteProfile */
 export async function deleteProfile(req, res) {
   try {
-    const userId = req.user.id; // ✅ ID del token
+    const userId = req.user.id; 
 
     const user = await userRepository.findOneBy({ id: userId });
     if (!user) return res.status(404).json({ error: "Usuario no encontrado" });
