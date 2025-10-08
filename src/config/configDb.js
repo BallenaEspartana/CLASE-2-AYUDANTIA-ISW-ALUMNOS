@@ -14,7 +14,7 @@ export const AppDataSource = new DataSource({
   username: `${DB_USERNAME}`,
   password: `${PASSWORD}`,
   database: `${DATABASE}`,
-  entities: [path.join(__dirname, "../entities/**/*.js")], // ✅ Ruta absoluta
+  entities: [path.join(__dirname, "../entities/**/*.js")], // Aca estaba el error antes
   synchronize: true, 
   logging: false,
 });
