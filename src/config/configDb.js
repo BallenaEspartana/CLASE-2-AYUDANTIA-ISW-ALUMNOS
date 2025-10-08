@@ -1,6 +1,11 @@
 "use strict";
 import { DataSource } from "typeorm";
 import { DATABASE, DB_USERNAME, HOST, PASSWORD, DB_PORT } from "./configEnv.js";
+import { fileURLToPath } from "url";
+import path from "path";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export const AppDataSource = new DataSource({
   type: "postgres",
@@ -9,7 +14,7 @@ export const AppDataSource = new DataSource({
   username: `${DB_USERNAME}`,
   password: `${PASSWORD}`,
   database: `${DATABASE}`,
-  entities: ["src/entities/**/*.js"],
+  entities: [path.join(__dirname, "../entities/**/*.js")], // ✅ Ruta absoluta
   synchronize: true, 
   logging: false,
 });
