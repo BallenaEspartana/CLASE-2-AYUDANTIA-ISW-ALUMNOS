@@ -1,11 +1,22 @@
 import "dotenv/config";
 import express from "express";
 import morgan from "morgan";
+import cors from "cors"
 import { AppDataSource, connectDB } from "./config/configDB.js";
 import { routerApi } from "./routes/index.routes.js";
 
 const app = express();
 app.use(express.json());
+//IMPORTANTE Para poder hacer request desde el front
+app.use(cors({
+  origin: process.env.FRONTEND_URL || "http://localhost:5173",
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true
+}))
+
+
+
 app.use(morgan("dev"));
 // Ruta principal de bienvenida
 app.get("/", (req, res) => {

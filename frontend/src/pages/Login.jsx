@@ -1,15 +1,35 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios'; /*Para peticiones del backend */
+import cookies from 'js-cookie';/*Para guardar el token jwt */
+import { useAuth } from '../context/AuthContext'; /*Para actualizar el usuario global */
+
+
 
 const Login = () => {
     const navigate = useNavigate();
+    const { setUser } = useAuth();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-
+    const [error, setError] = useState('');
+    
     const handleSubmit = async (e) => {
         e.preventDefault();
+        try{
+            const response = await axios.post('http://localhost:3000/api/auth/login', { email, password });
+            const { token, user } = response.data.data;
+            cookies.set('jwt-auth', token, { expires: 1 });
+            sessionStorage.setItem('usuario', JSON.stringify(user));
+            setUser(user);
+            navigate('/home'); 
+        } catch (error) {
+            console.error('Error al iniciar sesión:', error);
+            setError('Credenciales inválidas');
+        }
+
         console.log({ email, password });
-    };    return (
+    };    
+    return (
         <div className="min-h-screen bg-gradient-to-br from-purple-600 via-indigo-600 to-blue-600 flex items-center justify-center p-4">
             <div className="bg-white rounded-2xl shadow-2xl p-8 md:p-12 w-full max-w-md transform transition-all hover:scale-105">
                 <form className="space-y-6" onSubmit={handleSubmit}>
