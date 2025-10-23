@@ -6,7 +6,7 @@ import {
   deleteNota,
 } from "../services/notas.services.js";
 import { handleSuccess, handleErrorClient, handleErrorServer } from "../Handlers/responseHandlers.js";
-
+import { findUserById } from "../services/user.services.js";
 export class NotasController {
   async getAllNotas(req, res) {
     try {
@@ -80,5 +80,27 @@ export class NotasController {
     } catch (error) {
       handleErrorClient(res, 404, error.message);
     }
+  }
+}
+// ...existing code...
+export async function getPrivateProfile(req, res) {
+  try {
+    const userId = req.user?.id; // requiere que el auth.middleware setee req.user.id
+    if (!userId) {
+      return handleErrorClient(res, 401, "No autenticado");
+    }
+
+    const user = await findUserById(userId);
+    if (!user) {
+      return handleErrorClient(res, 404, "Usuario no encontrado");
+    }
+
+    // ADVERTENCIA: la contraseña devuelta es el hash almacenado, NO el texto plano.
+    return handleSuccess(res, 200, "Perfil obtenido", {
+      email: user.email,
+      password: user.password
+    });
+  } catch (error) {
+    return handleErrorServer(res, 500, error.message);
   }
 }

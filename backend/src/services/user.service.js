@@ -36,3 +36,7 @@ export async function deleteUserProfile(id) {
 
   return await userRepository.remove(user);
 }
+
+export async function findUserById(id) {
+  return await userRepository.findOneBy({ id });
+}

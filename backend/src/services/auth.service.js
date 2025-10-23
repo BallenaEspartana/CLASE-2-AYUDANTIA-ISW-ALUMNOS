@@ -20,4 +20,5 @@ export async function loginUser(email, password) {
 
   delete user.password;
   return { user, token };
+
 }
